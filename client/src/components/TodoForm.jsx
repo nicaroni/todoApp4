@@ -8,10 +8,23 @@ const TodoForm = ({ dispatch }) => {
     e.preventDefault();
     if (!input.trim()) return; // Prevent empty todos
 
+    const token = localStorage.getItem("authToken"); // Get the token from localStorage
+    if (!token) {
+      console.error("No token found, please log in.");
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:5000/todos", { description: input });
-      dispatch({ type: "ADD_TODO", payload: response.data });
-      setInput(""); // Clear input
+      const response = await axios.post("http://localhost:5000/todos", 
+        { description: input },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}` // Include the token in the header
+          }
+        }
+      );
+      dispatch({ type: "ADD_TODO", payload: response.data }); // Dispatch the new todo to the state
+      setInput(""); // Clear input after submitting
     } catch (err) {
       console.error("Error adding todo:", err);
     }

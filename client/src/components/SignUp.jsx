@@ -6,64 +6,78 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [action, setAction] = useState("Login");
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign-up logic here (e.g., API call)
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password, username }),
       });
+      
       const data = await response.json();
       if (response.ok) {
         console.log('Sign up successful');
-        navigate('/todos'); // Navigate to the Todo page after successful sign-up
+        navigate('/todos'); // Navigate to the Todo page
       } else {
-        console.error('Error:', data.error);
+        console.error('Error:', data.error); // Show error message
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
+  
   return (
     <div className='container'>
       <div header>
-        <div className='text'>{action}</div>
+        <div className='text'>Sign Up</div>
         <div className='underline'></div>
       </div>
-      <div className="inputs">
-        {action === "Login" ? <div></div> : <div className="input">
+      <form onSubmit={handleSubmit} className="inputs">
+        <div className="input">
           <span className="icon">
             <i className="bi bi-person-circle"></i>
           </span>
-          <input type="text" placeholder='Username' onChange={(e) => setUsername(e.target.value)} />
-        </div>}
-
+          <input 
+            type="text" 
+            placeholder="Username" 
+            value={username}
+            onChange={(e) => setUsername(e.target.value)} 
+            required 
+          />
+        </div>
         <div className="input">
           <span className="icon">
             <i className="bi bi-envelope"></i>
           </span>
-          <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
+          <input 
+            type="email" 
+            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
         </div>
         <div className="input">
           <span className="icon">
             <i className="bi bi-eye"></i>
           </span>
-          <input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+          />
         </div>
-      </div>
-      {action === "Sign Up" ? <div></div> : <div className="forgot-password">Forgot password? <span>Click Here!</span></div>}
-      <div className="submit-container">
-        <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div>
-        <div className={action === "Sign Up" ? "submit gray" : "submit"} onClick={() => { setAction("Login") }}>Login</div>
-      </div>
+        <div className="submit-container">
+          <button type="submit" className="submit">Sign Up</button>
+        </div>
+      </form>
     </div>
   );
 };

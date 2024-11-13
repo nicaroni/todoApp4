@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import './loginSignUp.scss'; // Import the same SCSS file as SignUp for consistent styling
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -8,9 +9,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here (e.g., API call)
+
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', { // Note the full URL
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -18,9 +20,13 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+
       if (response.ok) {
+        // Save the token to localStorage
+        localStorage.setItem('authToken', data.token);  // Store the token
+
         console.log('Login successful');
-        navigate('/todos'); // Navigate to the Todo page after successful login
+        navigate('/todos');  // Navigate to the todos page after login
       } else {
         console.error('Error:', data.error);
       }
@@ -30,18 +36,41 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <div>
-        <label>Email:</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className='container'>
+      <div header>
+        <div className='text'>Login</div>
+        <div className='underline'></div>
       </div>
-      <div>
-        <label>Password:</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      </div>
-      <button type="submit">Log In</button>
-    </form>
+      <form onSubmit={handleSubmit} className="inputs">
+        <div className="input">
+          <span className="icon">
+            <i className="bi bi-envelope"></i>
+          </span>
+          <input 
+            type="email" 
+            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
+        </div>
+        <div className="input">
+          <span className="icon">
+            <i className="bi bi-eye"></i>
+          </span>
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+          />
+        </div>
+        <div className="submit-container">
+          <button type="submit" className="submit">Log In</button>
+        </div>
+      </form>
+    </div>
   );
 };
 
