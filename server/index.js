@@ -13,15 +13,15 @@ app.use(express.json()); // Allow JSON request bodies
 
 // Middleware to verify JWT
 const verifyToken = (req, res, next) => {
-  const token = req.header("x-auth-token"); // Extract token from the request header
+  const token = req.header("Authorization")?.replace("Bearer ", ""); // Extract token from header
   if (!token) return res.status(401).json({ message: "Access denied" });
 
   try {
-    const decoded = jwt.verify(token, "your_jwt_secret"); // Verify the token
-    req.user = decoded; // Attach the decoded user data to the request object
-    next(); // Pass control to the next middleware or route handler
+    const decoded = jwt.verify(token, "your_jwt_secret");
+    req.user = decoded;
+    next();
   } catch (err) {
-    res.status(400).json({ message: "Invalid token" }); // If token is invalid
+    res.status(400).json({ message: "Invalid token" });
   }
 };
 
@@ -29,56 +29,48 @@ const verifyToken = (req, res, next) => {
 app.post("/api/signup", async (req, res) => {
   const { username, email, password } = req.body;
 
-  // Check if the user already exists
+  // Check if user already exists
   const userExists = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
   if (userExists.rows.length > 0) {
     return res.status(400).json({ error: "Email already exists" });
   }
 
   try {
-    // Hash the password
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user
+    // Insert user into database
     const newUser = await pool.query(
       "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
       [username, email, hashedPassword]
     );
 
-    // Create a token for the user
+    // Send response
     const token = jwt.sign({ userId: newUser.rows[0].user_id }, "your_jwt_secret", { expiresIn: "1h" });
-
-    res.status(201).json({
-      message: "User created successfully",
-      token, // Send the token to the client
-    });
+    res.status(201).json({ message: "User created successfully", token });
   } catch (err) {
     console.error("Error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Route to login the user
+// Login route
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if the user exists
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (user.rows.length === 0) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Check if the password is correct
     const isMatch = await bcrypt.compare(password, user.rows[0].password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Generate a JWT token
     const token = jwt.sign({ userId: user.rows[0].user_id }, "your_jwt_secret", { expiresIn: "1h" });
-
     res.json({ message: "Login successful", token });
   } catch (err) {
     console.error("Error:", err.message);
@@ -86,6 +78,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// Create a new todo for the authenticated user
 // Create a new todo for the authenticated user
 app.post("/todos", verifyToken, async (req, res) => {
   const { description } = req.body;
@@ -102,6 +95,8 @@ app.post("/todos", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
 
 // Get all todos for the authenticated user
 app.get("/todos", verifyToken, async (req, res) => {
@@ -159,6 +154,7 @@ app.put("/todos/:id", verifyToken, async (req, res) => {
 });
 
 // Delete a todo by ID for the authenticated user
+// Delete a todo by ID for the authenticated user
 app.delete("/todos/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.userId; // Get the user ID from the decoded token
@@ -176,6 +172,7 @@ app.delete("/todos/:id", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 (async () => {
   try {
