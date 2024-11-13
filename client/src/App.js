@@ -1,18 +1,21 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SignUp from './components/SignUp';
+import Login from './components/Login';
 import TodoApp from './components/TodoApp';
-import { BrowserRouter as Router, Route, Routes  } from 'react-router-dom';
-import SignUp from './components/signUp/LoginSignUp';
 import './index.scss';
 
 function App() {
   return (
-   <Router>
+    <Router>
       <Routes>
-      <Route path="/" element={<SignUp />} /> 
-        <Route path="/todos" element={<TodoApp />} /> 
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/todos" element={<TodoApp />} />
+        {/* Add other routes here */}
       </Routes>
-   </Router>
+    </Router>
   );
 }
-
 
 export default App;
