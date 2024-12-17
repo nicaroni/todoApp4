@@ -3,35 +3,24 @@ import todoReducer, { initialState } from "./TodoReducer";
 import axios from "axios";
 import '../index.scss';
 
+// Lazy load the TodoList component
 const TodoList = React.lazy(() => import('./TodoList'));
 
 const TodoApp = () => {
   const [todos, dispatch] = useReducer(todoReducer, initialState);
 
   // Fetch all todos from the server on component mount
-  const fetchTodos = async () => {
-    const token = localStorage.getItem('authToken');  // Get the token from localStorage
-  
-    if (!token) {
-      console.error('No token found, please log in.');
-      return;
-    }
-  
-    try {
-      const response = await axios.get('http://localhost:5000/todos', {
-        headers: {
-          'Authorization': `Bearer ${token}`  // Include the token in the header
-        },
-      });
-  
-      dispatch({ type: 'SET_TODOS', payload: response.data });  // Dispatch todos to the state
-    } catch (err) {
-      console.error('Error fetching todos:', err);
-    }
-  };
-
   useEffect(() => {
-    fetchTodos();  // Call fetchTodos on component mount
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/todos");
+        dispatch({ type: "SET_TODOS", payload: response.data });
+      } catch (err) {
+        console.error("Error fetching todos:", err);
+      }
+    };
+
+    fetchTodos();
   }, []);
 
   return (

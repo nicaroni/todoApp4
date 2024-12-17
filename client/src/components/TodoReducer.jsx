@@ -8,10 +8,12 @@ const todoReducer = (state, action) => {
       return [...state, action.payload];  // Add new todo
     case "DELETE_TODO":
       return state.filter(todo => todo.todo_id !== action.payload);  // Remove deleted todo from state
-    case "UPDATE_TODO":
+    case "TOGGLE_TODO_COMPLETED":
       return state.map(todo =>
-        todo.todo_id === action.payload.todo_id ? action.payload : todo
-      );
+        todo.todo_id === action.payload.todo_id
+          ? { ...todo, completed: action.payload.completed }
+          : todo
+      );  // Toggle completed status locally
     default:
       return state;
   }

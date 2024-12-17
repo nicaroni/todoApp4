@@ -5,21 +5,29 @@ const TodoItem = ({ todo, dispatch }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [input, setInput] = useState(todo.description);
 
-  const handleComplete = async () => {
-    try {
-      const updatedTodo = { ...todo, completed: !todo.completed };
-      await axios.put(`http://localhost:5000/todos/${todo.todo_id}`, updatedTodo);
-      dispatch({ type: "UPDATE_TODO", payload: updatedTodo });
-    } catch (err) {
-      console.error("Error updating todo:", err);
-    }
+  const handleComplete = () => {
+    const updatedTodo = { ...todo, completed: !todo.completed };
+
+    // Dispatch to update the state locally
+    dispatch({ type: "TOGGLE_TODO_COMPLETED", payload: updatedTodo });
   };
 
-  // Handle delete function
   const handleDelete = async () => {
+    const token = localStorage.getItem("authToken"); // Get the token from localStorage
+    if (!token) {
+      console.error("No token found, please log in.");
+      return; // Prevent the request from being sent if there's no token
+    }
+
     try {
-      await axios.delete(`http://localhost:5000/todos/${todo.todo_id}`);
-      dispatch({ type: "DELETE_TODO", payload: todo.todo_id });
+      // Send DELETE request to the backend to delete the todo
+      await axios.delete(`http://localhost:5000/todos/${todo.todo_id}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,  // Attach token here
+        },
+      });
+
+      dispatch({ type: "DELETE_TODO", payload: todo.todo_id });  // Update state after successful deletion
     } catch (err) {
       console.error("Error deleting todo:", err);
     }
@@ -71,5 +79,6 @@ const TodoItem = ({ todo, dispatch }) => {
     </tr>
   );
 };
+
 
 export default TodoItem;
