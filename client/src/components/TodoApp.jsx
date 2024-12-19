@@ -13,7 +13,7 @@ const TodoApp = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/todos");
+        const response = await axios.get("https://react-cors-express-2ab4446ca124.herokuapp.com/todos");
         dispatch({ type: "SET_TODOS", payload: response.data });
       } catch (err) {
         console.error("Error fetching todos:", err);

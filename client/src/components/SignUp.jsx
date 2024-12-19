@@ -13,7 +13,7 @@ const SignUp = () => {
     e.preventDefault();
   
     try {
-      const response = await fetch('http://localhost:5000/api/signup', {
+      const response = await fetch('https://react-cors-express-2ab4446ca124.herokuapp.com/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

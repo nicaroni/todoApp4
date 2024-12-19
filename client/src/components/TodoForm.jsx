@@ -16,7 +16,7 @@ const TodoForm = ({ dispatch }) => {
   
     try {
       const response = await axios.post(
-        "http://localhost:5000/todos",  // The backend API to create a todo
+        "https://react-cors-express-2ab4446ca124.herokuapp.com/todos",  // The backend API to create a todo
         { description: input },  // The data (todo description)
         {
           headers: {

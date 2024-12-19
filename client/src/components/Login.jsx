@@ -11,7 +11,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', { // Note the full URL
+      const response = await fetch('https://react-cors-express-2ab4446ca124.herokuapp.com/api/login', { // Note the full URL
 
         method: 'POST',
         headers: {
