@@ -7,11 +7,13 @@
 /.pnp
 .pnp.js
 
+
 # testing
 /coverage
 
 # production
 /build
+/client/build
 
 # misc
 .DS_Store
@@ -26,3 +28,6 @@ yarn-error.log*
 
 
 /server/nito.js
+
+# Local Netlify folder
+.netlify
