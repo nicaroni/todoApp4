@@ -21,7 +21,7 @@ const TodoItem = ({ todo, dispatch }) => {
 
     try {
       // Send DELETE request to the backend to delete the todo
-      await axios.delete(`https://react-cors-express-2ab4446ca124.herokuapp.com/${todo.todo_id}`, {
+      await axios.delete(`https://react-cors-express-2ab4446ca124.herokuapp.com/todos/${todo.todo_id}`, {
         headers: {
           "Authorization": `Bearer ${token}`,  // Attach token here
         },
